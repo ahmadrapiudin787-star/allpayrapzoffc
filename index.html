@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Gateway - DANA, Gopay, OVO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%);
+            color: #f1f1f1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23005287" fill-opacity="0.2" d="M0,224L48,213.3C96,203,192,181,288,160C384,139,480,117,576,122.7C672,128,768,160,864,170.7C960,181,1056,171,1152,165.3C1248,160,1344,160,1392,160L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(25, 25, 35, 0.9);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #4e54c8;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, #ff6b6b, #4e54c8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: #a0a0c0;
+            margin-bottom: 2rem;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .payment-card {
+            background: rgba(40, 40, 50, 0.8);
+            border-radius: 15px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .payment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .payment-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .dana { color: #00a3ff; }
+        .gopay { color: #00aae7; }
+        .ovo { color: #4c2a86; }
+        .qris { color: #ffcc00; }
+
+        .payment-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .payment-info {
+            background: rgba(30, 30, 40, 0.7);
+            padding: 1rem;
+            border-radius: 10px;
+            width: 100%;
+            text-align: center;
+            margin-top: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .payment-number {
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            margin: 0.5rem 0;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .copy-btn {
+            background: linear-gradient(90deg, #4e54c8, #8f94fb);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            transition: opacity 0.3s;
+        }
+
+        .copy-btn:hover {
+            opacity: 0.9;
+        }
+
+        .qris-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .qris-placeholder {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(45deg, #2c2c2c, #1a1a1a);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            border: 2px dashed #ffcc00;
+        }
+
+        .qris-placeholder i {
+            font-size: 3rem;
+            color: #ffcc00;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: #a0a0c0;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .payment-methods {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem;
+            background: rgba(40, 40, 50, 0.95);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            border-left: 4px solid #4e54c8;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-wallet"></i>
+            </div>
+            <h1>Payment Gateway</h1>
+            <p class="subtitle">Lakukan pembayaran melalui DANA, Gopay, OVO, atau QRIS</p>
+        </header>
+
+        <div class="payment-methods">
+            <div class="payment-card">
+                <div class="payment-icon dana">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <h3 class="payment-title">DANA</h3>
+                <div class="payment-info">
+                    <p class="payment-number">081290852613</p>
+                    <button class="copy-btn" data-number="081290852613">
+                        <i class="fas fa-copy"></i> Salin Nomor
+                    </button>
+                </div>
+            </div>
+
+            <div class="payment-card">
+                <div class="payment-icon gopay">
+                    <i class="fas fa-money-bill-alt"></i>
+                </div>
+                <h3 class="payment-title">Gopay</h3>
+                <div class="payment-info">
+                    <p class="payment-number">082313805886</p>
+                    <button class="copy-btn" data-number="082313805886">
+                        <i class="fas fa-copy"></i> Salin Nomor
+                    </button>
+                </div>
+            </div>
+
+            <div class="payment-card">
+                <div class="payment-icon ovo">
+                    <i class="fas fa-credit-card"></i>
+                </div>
+                <h3 class="payment-title">OVO</h3>
+                <div class="payment-info">
+                    <p class="payment-number">081290852613</p>
+                    <button class="copy-btn" data-number="081290852613">
+                        <i class="fas fa-copy"></i> Salin Nomor
+                    </button>
+                </div>
+            </div>
+
+            <div class="payment-card">
+                <div class="payment-icon qris">
+                    <i class="fas fa-qrcode"></i>
+                </div>
+                <h3 class="payment-title">QRIS</h3>
+                <div class="payment-info">
+                    <p>Scan kode QR untuk pembayaran</p>
+                    <div class="qris-container">
+                        <div class="qris-placeholder">
+                            <i class="fas fa-qrcode"></i>
+                        </div>
+                        <p>Gunakan aplikasi bank/e-wallet untuk scan QRIS</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2023 Payment Gateway | Terima kasih telah bertransaksi dengan kami</p>
+        </footer>
+    </div>
+
+    <div class="notification" id="notification">
+        <p><i class="fas fa-check-circle"></i> Nomor berhasil disalin!</p>
+    </div>
+
+    <script>
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const number = this.getAttribute('data-number');
+                copyToClipboard(number);
+                showNotification();
+            });
+        });
+
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+        }
+
+        function showNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
